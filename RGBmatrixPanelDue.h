@@ -6,11 +6,11 @@
 //#define PWMMAX ((1 << PWMBITS) - 1)
 
 //#define WIDTH 32       // RGB LEDs
-//#define HEIGHT 16      //  " 
+//#define HEIGHT 16      //  "
 
-//#if (PWMBITS == 3) || (PWMBITS == 4) 
+//#if (PWMBITS == 3) || (PWMBITS == 4)
 //#define NUMBYTES (WIDTH * HEIGHT / 2) * 3  // use 1.5 bytes (12 bits) per pixel
-//#endif 
+//#endif
 
 // Matrix types
 #define MATRIX_16_32 0
@@ -47,7 +47,7 @@ class RGBmatrixPanelDue {
   void drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1, uint16_t c);
   void drawHLine(int16_t x, int16_t y, int16_t h, uint16_t color);
   void drawVLine(int16_t x, int16_t y, int16_t h, uint16_t color);
-  void drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color); 
+  void drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
   void fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
   void drawCircle(uint8_t x0, uint8_t y0, uint8_t r, uint16_t color);
   void drawCircleHelper( int16_t x0, int16_t y0, int16_t r, uint8_t cornername, uint16_t color);
@@ -60,10 +60,12 @@ class RGBmatrixPanelDue {
   void setCursor(uint8_t x, uint8_t y);
   void setTextSize(uint8_t s);
   void setTextColor(uint16_t c);
-  void print(uint8_t c);
+  void print(char c);
+  void print(const char str[]);
+  void println(char c);
   void println();
-  void println(char *str);
-  void drawChar(uint8_t x, uint8_t y, char c, uint16_t color, uint8_t size);
+  void println(const char str[]);
+  void drawChar(uint8_t x, uint8_t y, unsigned char c, uint16_t color, uint8_t size);
 
   void updateDisplay();
   void dumpMatrix(void);

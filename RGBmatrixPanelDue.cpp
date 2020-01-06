@@ -1,5 +1,6 @@
 #include "RGBmatrixPanelDue.h"
 #include "glcdfontDue.c"
+#include "Print.h"
 #include <Arduino.h>
 
 uint8_t RGBmatrixPanelDue::width() {return WIDTH; }
@@ -49,21 +50,21 @@ void RGBmatrixPanelDue::init(uint8_t xpanels, uint8_t ypanels, uint8_t planes) {
 
 void RGBmatrixPanelDue::begin(uint32_t frequency) {
   pinMode(APIN, OUTPUT);
-  digitalWrite(APIN, LOW); 
+  digitalWrite(APIN, LOW);
   pinMode(BPIN, OUTPUT);
-  digitalWrite(BPIN, LOW); 
+  digitalWrite(BPIN, LOW);
   pinMode(CPIN, OUTPUT);
-  digitalWrite(CPIN, LOW); 
+  digitalWrite(CPIN, LOW);
   pinMode(DPIN, OUTPUT); // Only applies to 32x32 matrix
-  digitalWrite(DPIN, LOW); 
+  digitalWrite(DPIN, LOW);
   pinMode(LAT, OUTPUT);
-  digitalWrite(LAT, LOW); 
+  digitalWrite(LAT, LOW);
   pinMode(CLK, OUTPUT);
-  digitalWrite(CLK, HIGH); 
+  digitalWrite(CLK, HIGH);
 
   pinMode(OE, OUTPUT);
-  digitalWrite(OE, LOW); 
-  
+  digitalWrite(OE, LOW);
+
   pinMode(R1,OUTPUT);
   pinMode(R2,OUTPUT);
   pinMode(G1,OUTPUT);
@@ -93,7 +94,7 @@ uint16_t RGBmatrixPanelDue::Color333(uint8_t r, uint8_t g, uint8_t b) {
 
 uint16_t RGBmatrixPanelDue::Color444(uint8_t r, uint8_t g, uint8_t b) {
   uint16_t c;
-  
+
   c = r;
   c <<= 4;
   c |= g & 0xF;
@@ -104,7 +105,7 @@ uint16_t RGBmatrixPanelDue::Color444(uint8_t r, uint8_t g, uint8_t b) {
 
 uint16_t RGBmatrixPanelDue::Color888(uint8_t r, uint8_t g, uint8_t b) {
   uint16_t c;
-  
+
   c = (r >> 5);
   c <<= 4;
   c |= (g >> 5) & 0xF;
@@ -128,12 +129,12 @@ void  RGBmatrixPanelDue::drawPixel(uint8_t xin, uint8_t yin, uint16_t c) {
   uint16_t index = 0;
   uint8_t old, x, y;
   uint8_t red, green, blue, panel, ysave, ii;
-  
+
   // extract the 12 bits of color
   red = (c >> 8) & 0xF;
   green = (c >> 4) & 0xF;
   blue = c & 0xF;
-  
+
   // change to right coords
   //x = (yin - yin%single_matrix_height)/single_matrix_height*single_matrix_width*NX + xin;
   x = xin % WIDTH;
@@ -142,9 +143,9 @@ void  RGBmatrixPanelDue::drawPixel(uint8_t xin, uint8_t yin, uint16_t c) {
   //Serial.print("y = "); Serial.println(y);
 
   // both top and bottom are stored in same byte
-  if (y%single_matrix_height < sections) 
+  if (y%single_matrix_height < sections)
     index = y%single_matrix_height;
-  else 
+  else
 	index = y%single_matrix_height-sections;
   // now multiply this y by the # of pixels in a row
   index *= single_matrix_width*NX*NY;
@@ -187,7 +188,7 @@ void  RGBmatrixPanelDue::drawPixel(uint8_t xin, uint8_t yin, uint16_t c) {
 
 
 // bresenham's algorithm - thx wikpedia
-void RGBmatrixPanelDue::drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1, 
+void RGBmatrixPanelDue::drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1,
 		      uint16_t color) {
   //int8_t y1 = y11;
   //int8_t y0 = y00;
@@ -231,7 +232,7 @@ void RGBmatrixPanelDue::drawLine(int8_t x0, int8_t y0, int8_t x1, int8_t y1,
 }
 
 // draw a rectangle
-void RGBmatrixPanelDue::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
+void RGBmatrixPanelDue::drawRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h,
 		      uint16_t color) {
   drawLine(x, y, x+w-1, y, color);
   drawLine(x, y+h-1, x+w-1, y+h-1, color);
@@ -253,7 +254,7 @@ void RGBmatrixPanelDue::drawVLine(int16_t x, int16_t y,
 }
 
 // fill a rectangle
-void RGBmatrixPanelDue::fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, 
+void RGBmatrixPanelDue::fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h,
 		      uint16_t color) {
     for (uint8_t j=y; j<y+h; j++) {
       drawHLine(x, j, w, color);
@@ -261,7 +262,7 @@ void RGBmatrixPanelDue::fillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h,
 }
 
 // draw a circle outline
-void RGBmatrixPanelDue::drawCircle(uint8_t x0, uint8_t y0, uint8_t r, 
+void RGBmatrixPanelDue::drawCircle(uint8_t x0, uint8_t y0, uint8_t r,
 			uint16_t color) {
   int16_t f = 1 - r;
   int16_t ddF_x = 1;
@@ -283,17 +284,17 @@ void RGBmatrixPanelDue::drawCircle(uint8_t x0, uint8_t y0, uint8_t r,
     x++;
     ddF_x += 2;
     f += ddF_x;
-  
+
     drawPixel(x0 + x, y0 + y, color);
     drawPixel(x0 - x, y0 + y, color);
     drawPixel(x0 + x, y0 - y, color);
     drawPixel(x0 - x, y0 - y, color);
-    
+
     drawPixel(x0 + y, y0 + x, color);
     drawPixel(x0 - y, y0 + x, color);
     drawPixel(x0 + y, y0 - x, color);
     drawPixel(x0 - y, y0 - x, color);
-    
+
   }
 }
 
@@ -383,7 +384,7 @@ void RGBmatrixPanelDue::fillScreen(uint16_t c) {
 }
 
 void RGBmatrixPanelDue::setCursor(uint8_t x, uint8_t y) {
-  cursor_x = x; 
+  cursor_x = x;
   cursor_y = y;
 }
 
@@ -395,7 +396,8 @@ void RGBmatrixPanelDue::setTextColor(uint16_t c) {
   textcolor = c;
 }
 
-void RGBmatrixPanelDue::print(uint8_t c) {
+// Print unsigned int 8
+void RGBmatrixPanelDue::print(char c) {
   if (c == '\n') {
     cursor_y += textsize*8;
     cursor_x = 0;
@@ -407,21 +409,33 @@ void RGBmatrixPanelDue::print(uint8_t c) {
   }
 }
 
+// Print char array
+void RGBmatrixPanelDue::print(const char str[]){
+	for (int i=0; i<strlen(str); i++) {
+		print(str[i]);
+	}
+}
+
 // Println without string
 void RGBmatrixPanelDue::println(){
-  cursor_x = 0; 
+  cursor_x = 0;
   cursor_y += 8;
 }
+
+// Println with char
+void RGBmatrixPanelDue::println(char c){
+	print((uint8_t) c);
+	println();
+}
+
 // Println with string
-void RGBmatrixPanelDue::println(char *str){
-  for (int i=0; i<strlen(str); i++) {
-    print(str[i]);
-  }
-  println();	
+void RGBmatrixPanelDue::println(const char str[]){
+  print(str);
+  println();
 }
 
 // draw a character
-void RGBmatrixPanelDue::drawChar(uint8_t x, uint8_t y, char c, 
+void RGBmatrixPanelDue::drawChar(uint8_t x, uint8_t y, unsigned char c,
 			      uint16_t color, uint8_t size) {
   for (uint8_t i =0; i<5; i++ ) {
     //uint8_t line = pgm_read_byte(font+(c*5)+i);
@@ -432,7 +446,7 @@ void RGBmatrixPanelDue::drawChar(uint8_t x, uint8_t y, char c,
 	  drawPixel(x+i, y+j, color);
 	else {  // big size
 	  fillRect(x+i*size, y+j*size, size, size, color);
-	} 
+	}
       }
       line >>= 1;
     }
@@ -442,7 +456,7 @@ void RGBmatrixPanelDue::drawChar(uint8_t x, uint8_t y, char c,
 
 void RGBmatrixPanelDue::dumpMatrix(void) {
   uint8_t i=0;
-  
+
   do {
     Serial.print("0x");
     if (matrixbuff[i] < 0xF)  Serial.print('0');
@@ -451,15 +465,15 @@ void RGBmatrixPanelDue::dumpMatrix(void) {
     i++;
     if (! (i %32) ) Serial.println();
   } while (i != 0);
-  
-    
+
+
 }
 
 
 
 void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
 
-  
+
 
   //Serial.println('here!');
    //digitalWrite(OE, HIGH);
@@ -468,7 +482,7 @@ void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
   uint16_t oeLow = 0x0020;
   portCstatus |= 0x0020; // clk is high here too
   REG_PIOC_ODSR = portCstatus; // set OE, CLK to high
-    
+
   // set A, B, C pins
   if (secn & 0x1){  // Apin
     portCstatus |= 0x0002;
@@ -479,7 +493,7 @@ void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
     portCstatus |= 0x0004;
     portCstatus_nonclk |= 0x0004;
     oeLow |= 0x0004;
-  } 
+  }
   if (secn & 0x4){ // Cpin
     portCstatus |= 0x0008;
     portCstatus_nonclk |= 0x0008;
@@ -489,17 +503,17 @@ void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
     portCstatus |= 0x0080;
     portCstatus_nonclk |= 0x0080;
     oeLow |= 0x0080;
-  } 
+  }
   REG_PIOC_ODSR = portCstatus; // set A, B, C pins
- 
+
   uint8_t  low, high;
   uint16_t out = 0x0000;
-  
+
   uint8_t i;
   for ( i=0; i<single_matrix_width*NX*NY; i++) {
 
     out = 0x0000;
-   
+
     // red
    low = *buffptr++;
    high = low >> 4;
@@ -520,8 +534,8 @@ void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
    low &= 0x0F;
    if (low > pwmcounter) out |= 0x0002; // B2, pin 26, PD1
    if (high > pwmcounter) out |= 0x0004; // B1, pin 27, PD2
-   
-    
+
+
    //digitalWrite(CLK, LOW);
    REG_PIOC_ODSR = portCstatus_nonclk; // set clock to low, OE, A, B, C stay the same
 
@@ -529,17 +543,17 @@ void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
 
    //digitalWrite(CLK, HIGH);
    REG_PIOC_ODSR = portCstatus; // set clock to high, OE, A, B, C stay the same
-   
-  } 
+
+  }
 
   // latch it!
-  
+
   //digitalWrite(LAT, HIGH);
   REG_PIOC_ODSR = (portCstatus |= 0x0040);
 
-  //digitalWrite(LAT, LOW);  
+  //digitalWrite(LAT, LOW);
   REG_PIOC_ODSR = portCstatus;
-  
+
   //digitalWrite(OE, LOW);
   REG_PIOC_ODSR = oeLow; //portCstatus; //<< portCstatus;
 }
@@ -547,9 +561,9 @@ void RGBmatrixPanelDue::writeSection(uint8_t secn, uint8_t *buffptr) {
 
 
 void  RGBmatrixPanelDue::updateDisplay(void) {
-  writeSection(scansection, matrixbuff + (PWMBITS*single_matrix_width*NX*NY*scansection));  
+  writeSection(scansection, matrixbuff + (PWMBITS*single_matrix_width*NX*NY*scansection));
   scansection++;
-  if (scansection == sections) { 
+  if (scansection == sections) {
     scansection = 0;
     pwmcounter++;
     if (pwmcounter == PWMMAX) { pwmcounter = 0; }
