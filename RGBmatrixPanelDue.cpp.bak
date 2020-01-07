@@ -456,6 +456,7 @@ void RGBmatrixPanelDue::print(char c) {
 		cursor_x = 0;
 		cursor_y += (int16_t)textsize * (uint8_t)pgm_read_byte(&gfxFont->yAdvance);
       } else if (c != '\r') {
+		  Serial.println((uint8_t)pgm_read_byte(&gfxFont->yAdvance));
       uint8_t first = pgm_read_byte(&gfxFont->first);
       if ((c >= first) && (c <= (uint8_t)pgm_read_byte(&gfxFont->last))) {
         GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c - first);

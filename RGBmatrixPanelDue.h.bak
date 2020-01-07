@@ -91,7 +91,7 @@ class RGBmatrixPanelDue {
 
   uint8_t cursor_x, cursor_y, textsize;
   uint16_t textcolor;
-  uint8_t setOffset;
+  uint8_t xstep =6, ystep = 8;
   GFXfont *gfxFont;   ///< Pointer to special font
   //uint8_t maxScan = 8;
 
